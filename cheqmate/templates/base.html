@@ -1,0 +1,32 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}CheqMate{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <header>
+        <h1>Welcome to CheqMate</h1>
+        <nav>
+            <ul>
+                <li><a href="{% url 'view_profile' %}">Profile</a></li>
+                <li><a href="{% url 'edit_profile' %}">Edit Profile</a></li>
+                <!-- Add more navigation links here -->
+            </ul>
+        </nav>
+    </header>
+    
+    <main>
+        {% block content %}
+        <!-- Page-specific content will go here -->
+        {% endblock %}
+    </main>
+
+    <footer>
+        <p>&copy; 2024 CheqMate. All rights reserved.</p>
+    </footer>
+</body>
+</html>
