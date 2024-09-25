@@ -6,13 +6,17 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.sites.shortcuts import get_current_site
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
-from django.template.loader import render_to_string
+from django.template.loader import render_to_string.
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib import messages
 from django.contrib.auth.models import User
 from .models import CustomerProfile
 
+
 # Create your views here.
+def index_view(request):
+    return render(request, 'index.html')
+
 def signup_view(request):
     if request.method == 'POST':
         form = UserRegistrationForm(request.POST)
@@ -66,7 +70,7 @@ def login_view(request):
             if user is not None:
                 login(request, user)
                 messages.info(request, f"You are now logged in as {username}.")
-                return redirect('home')  # Replace 'home' with your homepage view name
+                return redirect('view_profile')  # Replace 'home' with your homepage view name
             else:
                 messages.error(request, "Invalid username or password.")
         else:
@@ -79,7 +83,7 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     messages.info(request, "You have successfully logged out.")
-    return redirect('home')  # Replace 'home' with your homepage view name
+    return redirect('index')  
 
 
 @login_required
