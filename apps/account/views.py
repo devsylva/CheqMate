@@ -70,6 +70,7 @@ def login_view(request):
             if user is not None:
                 login(request, user)
                 messages.info(request, f"You are now logged in as {username}.")
+                return redirect('view_profile')  # Replace 'home' with your homepage view name or the profile page
                 return redirect('view_profile')  # Replace 'home' with your homepage view name
             else:
                 messages.error(request, "Invalid username or password.")

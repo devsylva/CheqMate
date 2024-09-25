@@ -41,7 +41,28 @@ INSTALLED_APPS = [
     "apps.account",
     "apps.checkout",
     "apps.packaging",
+    "rest_framework",
 ]
+
+# CORS Settings
+CORS_ALLOW_ALL_ORIGINS = False  # Set to True to allow all origins; use cautiously in production.
+CORS_ALLOW_CREDENTIALS = True   # Allow cookies and credentials in CORS requests.
+CORS_ALLOW_HEADERS = (
+    'Authorization',
+    'Content-Type',
+)
+CORS_ALLOW_METHODS = (
+    'GET',
+    'POST',
+    'PUT',
+    'PATCH',
+    'DELETE',
+    'OPTIONS',
+)
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:8000',  # Add your allowed origins here
+]
+
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -82,6 +103,23 @@ DATABASES = {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
     }
+}
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.AllowAny',
+    ),
+    'DEFAULT_PARSER_CLASSES': [
+        'rest_framework.parsers.FormParser',
+        'rest_framework.parsers.MultiPartParser',
+        'rest_framework.parsers.JSONParser',
+    ],
+    'DEFAULT_RENDERER_CLASSES': [
+        "rest_framework.renderers.JSONRenderer",
+        "rest_framework.renderers.BrowsableAPIRenderer",
+    ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10,
 }
 
 
