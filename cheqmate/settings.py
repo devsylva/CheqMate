@@ -107,7 +107,7 @@ DATABASES = {
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.AllowAny',
+        'rest_framework.permissions.IsAuthenticated',
     ),
     'DEFAULT_PARSER_CLASSES': [
         'rest_framework.parsers.FormParser',
@@ -166,6 +166,8 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # In settings.py
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+APPEND_SLASH = True
 
 # in production
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

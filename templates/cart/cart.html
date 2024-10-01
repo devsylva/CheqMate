@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Your Cart</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+        background-color: #fff;
+        padding: 20px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+      }
+
+      h1 {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #333;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+      }
+
+      table th,
+      table td {
+        padding: 10px;
+        text-align: left;
+      }
+
+      table th {
+        background-color: #4caf50;
+        color: white;
+      }
+
+      table td {
+        border-bottom: 1px solid #ddd;
+      }
+
+      table tr:hover {
+        background-color: #f1f1f1;
+      }
+
+      .total-row {
+        font-size: 1.2em;
+        font-weight: bold;
+        color: #333;
+        text-align: right;
+      }
+
+      .checkout-btn {
+        display: block;
+        width: 100%;
+        padding: 15px;
+        background-color: #4caf50;
+        color: white;
+        text-align: center;
+        text-decoration: none;
+        font-weight: bold;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+      }
+
+      .checkout-btn:hover {
+        background-color: #45a049;
+      }
+
+      .empty-cart {
+        text-align: center;
+        font-size: 1.2em;
+        color: #666;
+      }
+    </style>
+    <!-- <script>
+      // Refresh the page every 2 seconds
+      setInterval(() => {
+        location.reload();
+      }, 2000); // 2000 milliseconds = 2 seconds
+    </script> -->
+  </head>
+  <body>
+    <div class="container">
+      <h1>Your Cart</h1>
+
+      {% if items %}
+      <table>
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Price</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="cart-items">
+          {% for item in items %}
+          <tr id="item-{{ item.id }}">
+            <td>{{ item.product.name }}</td>
+            <td>${{ item.price }}</td>
+            <td>
+              <button class="remove-btn" data-id="{{ item.id }}">Remove</button>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+        <tr>
+          <td>Total Price:</td>
+          <td id="total-price">${{ cart.total_price }}</td>
+        </tr>
+      </table>
+
+      <!-- Checkout button -->
+      <a href="#" class="checkout-btn">Proceed to Checkout</a>
+
+      {% else %}
+      <p class="empty-cart">Your cart is empty!</p>
+      {% endif %}
+    </div>
+  </body>
+  <script>
+    document.querySelectorAll('.remove-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const itemId = this.getAttribute('data-id');
+
+            fetch(`/api/cart/items/${itemId}/`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken'),  // Function to get CSRF token for Django
+                },
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Remove the item from the DOM
+                    document.getElementById(`item-${itemId}`).remove();
+                    // Optionally, update the total price here
+                    updateTotalPrice();
+                } else {
+                    console.error('Error removing item:', response.statusText);
+                }
+            })
+            .catch(error => {
+                console.error('Fetch error:', error);
+            });
+        });
+    });
+
+    // Function to update the total price (if needed)
+    function updateTotalPrice() {
+        const priceElements = document.querySelectorAll('#cart-items td:nth-child(2)');
+        let total = 0;
+
+        priceElements.forEach(element => {
+            total += parseFloat(element.innerText.replace('$', ''));
+        });
+
+        document.getElementById('total-price').innerText = `$${total.toFixed(2)}`;
+    }
+
+    // Function to get CSRF token
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Check if this cookie string begins with the name we want
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+</script>
+
+</html>

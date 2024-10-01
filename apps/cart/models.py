@@ -21,6 +21,8 @@ class Cart(models.Model):
     customer = models.ForeignKey(User, on_delete=models.CASCADE)
     qr_code = models.CharField(max_length=20, unique=True, editable=False)
     total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    is_synced = models.BooleanField(default=False)
+    checked_out = models.BooleanField(default=False)    
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -28,12 +30,12 @@ class Cart(models.Model):
         return f"Cart ({self.customer.username}) - Total: {self.total_price}"
 
     def update_total_price(self):
-        self.total_price = sum(item.price for item in self.cartitem_set.all())
+        self.total_price = sum(item.price for item in self.items.all())
         self.save()
 
 
 class CartItem(models.Model):
-    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items')
     product = models.ForeignKey('Product', on_delete=models.CASCADE)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     is_paid = models.BooleanField(default=False)
