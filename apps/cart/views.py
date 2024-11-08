@@ -17,7 +17,7 @@ def dashboard_view(request):
 
 class StartShoppingView(APIView):
     def post(self, request):
-        user = User.objects.get(id=1)#request.user
+        user = request.user
         cart = Cart.objects.create(customer=user)
 
         # Generate QR code
@@ -54,7 +54,9 @@ class SyncCartView(APIView):
             cart.save()
             return JsonResponse({
                 "success": True,
-                "message": "Cart synced with user", "cart_id": cart.id
+                "message": "Cart synced with user", 
+                "cart_id": cart.id,
+                "user_id": cart.customer.id
                 }, status=status.HTTP_200_OK)
 
         except Cart.DoesNotExist:
@@ -68,18 +70,16 @@ class SyncCartStatusView(APIView):
     def get(self, request):
         qr_code = request.GET.get('qr_code')
         
-        try:
-            cart = Cart.objects.get(qr_code=qr_code)
-            return JsonResponse({
-                "success": True,
-                "is_synced": cart.is_synced,
-                "cart_id": cart.id
-            }, status=status.HTTP_200_OK)
-        except Cart.DoesNotExist:
-            return JsonResponse({
-                "success": False,
-                "message": "Cart not found"
-            }, status=status.HTTP_404_NOT_FOUND)
+        
+        cart = get_object_or_404(Cart, qr_code=qr_code)#Cart.objects.get(qr_code=qr_code)
+        return JsonResponse({
+            "success": True,
+            "is_synced": cart.is_synced,
+            "checked_out": cart.checked_out,
+            "cart_id": cart.id,
+            "user_id": cart.customer.id
+        }, status=status.HTTP_200_OK)
+        
 
 
 # view cart page

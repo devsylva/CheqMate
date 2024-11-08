@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from .forms import CustomerProfileForm, UserRegistrationForm
@@ -18,7 +19,10 @@ def index_view(request):
     return render(request, 'index.html')
 
 def signup_view(request):
-    if request.method == 'POST':
+    if request.user.is_authenticated:
+        return redirect('dashboard')
+
+    elif request.method == 'POST':
         form = UserRegistrationForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
@@ -61,7 +65,10 @@ def activate_view(request, uidb64, token):
 
 
 def login_view(request):
-    if request.method == 'POST':
+    if request.user.is_authenticated:
+        return redirect('dashboard')
+
+    elif request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
             username = form.cleaned_data.get('username')
@@ -79,20 +86,20 @@ def login_view(request):
         form = AuthenticationForm()
     return render(request, 'account/login.html', {'form': form})
 
-
+@login_required(login_url='login')
 def logout_view(request):
     logout(request)
     messages.info(request, "You have successfully logged out.")
     return redirect('index')  
 
 
-@login_required
+@login_required(login_url='login')
 def view_profile(request):
     profile = CustomerProfile.objects.get(user=request.user)
     return render(request, "account/view_profile.html", {"profile": profile})
 
 
-@login_required
+@login_required(login_url='login')
 def edit_profile(request):
     profile, created = CustomerProfile.objects.get_or_create(user=request.user)
     if request.method == 'POST':

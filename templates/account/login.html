@@ -1,70 +1,76 @@
-{% load static %}
-{% load widget_tweaks %}
+{% load static %} {% load widget_tweaks %}
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login - CheqMate</title>
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}" />
     <script src="https://unpkg.com/lucide@latest"></script>
-</head>
-<body>
+  </head>
+  <body>
     <!-- Navigation -->
     <nav class="navbar">
-        <div class="container nav-container">
-            <div class="nav-logo">
-                <a href="{% url 'index' %}"><i data-lucide="shopping-cart"></i></a>
-                <span>CheqMate</span>
-            </div>
-            <div class="nav-links">
-                <a href="{% url 'signup' %}" class="nav-btn">Sign Up</a>
-            </div>
+      <div class="container nav-container">
+        <div class="nav-logo">
+          <a href="{% url 'index' %}"><i data-lucide="shopping-cart"></i></a>
+          <span>CheqMate</span>
         </div>
+        <div class="nav-links">
+          <a href="{% url 'signup' %}" class="nav-btn">Sign Up</a>
+        </div>
+      </div>
     </nav>
+    {% if messages %}
+    <div class="messages">
+      {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+      {% endfor %}
+    </div>
+    {% endif %}
 
     <div class="auth-container">
-        <div class="auth-card">
-            <div class="auth-header">
-                <i data-lucide="lock" class="auth-icon"></i>
-                <h1>Welcome back</h1>
-                <p>Please sign in to your account</p>
-            </div>
-
-            <form class="auth-form" method="POST">
-                {% csrf_token %}
-
-                <div class="form-group">
-                    <label for="email">Username</label>
-                    {% render_field form.username required=True %}
-                </div>
-                
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    {% render_field form.password %}
-                </div>
-
-                <div class="form-options">
-                    <label class="checkbox-label">
-                        <input type="checkbox" id="remember">
-                        <span>Remember me</span>
-                    </label>
-                    <a href="#" class="forgot-password">Forgot password?</a>
-                </div>
-
-                <button type="submit" class="auth-button">Sign in</button>
-            </form>
-
-            <p class="auth-footer">
-                Don't have an account? 
-                <a href="{% url 'signup' %}">Sign up</a>
-            </p>
+      <div class="auth-card">
+        <div class="auth-header">
+          <i data-lucide="lock" class="auth-icon"></i>
+          <h1>Welcome back</h1>
+          <p>Please sign in to your account</p>
         </div>
+
+        <form class="auth-form" method="POST">
+          {% csrf_token %}
+
+          <div class="form-group">
+            <label for="email">Username</label>
+            {% render_field form.username required=True %}
+          </div>
+
+          <div class="form-group">
+            <label for="password">Password</label>
+            {% render_field form.password %}
+          </div>
+
+          <div class="form-options">
+            <label class="checkbox-label">
+              <input type="checkbox" id="remember" />
+              <span>Remember me</span>
+            </label>
+            <a href="#" class="forgot-password">Forgot password?</a>
+          </div>
+
+          <button type="submit" class="auth-button">Sign in</button>
+        </form>
+
+        <p class="auth-footer">
+          Don't have an account?
+          <a href="{% url 'signup' %}">Sign up</a>
+        </p>
+      </div>
     </div>
 
     <script>
-        lucide.createIcons();
+      lucide.createIcons();
     </script>
-</body>
+  </body>
 </html>

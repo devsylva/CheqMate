@@ -138,10 +138,6 @@ function cancelShopping() {
   }, 300);
 }
 
-// Handle logout
-function handleLogout() {
-  window.location.href = "/login.html";
-}
 
 // Initialize dashboard when page loads
 document.addEventListener("DOMContentLoaded", initDashboard);
