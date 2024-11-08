@@ -7,6 +7,7 @@ from rest_framework import status
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404
 from .models import Cart
+from django.contrib.auth.models import User
 
 # Create your views here.
 
@@ -16,7 +17,7 @@ def dashboard_view(request):
 
 class StartShoppingView(APIView):
     def post(self, request):
-        user = request.user
+        user = User.objects.get(id=1)#request.user
         cart = Cart.objects.create(customer=user)
 
         # Generate QR code

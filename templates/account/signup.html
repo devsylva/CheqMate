@@ -1,95 +1,83 @@
+{% load static %}
+{% load widget_tweaks %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up - CheqMate</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            color: #333;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-
-        .container {
-            width: 400px;
-            background: #fff;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            border-radius: 5px;
-        }
-
-        h2 {
-            text-align: center;
-            margin-bottom: 20px;
-            color: #4CAF50;
-        }
-
-        form {
-            display: flex;
-            flex-direction: column;
-        }
-
-        form label {
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-
-        form input[type="text"],
-        form input[type="email"],
-        form input[type="password"] {
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-
-        form button[type="submit"] {
-            background-color: #4CAF50;
-            color: #fff;
-            border: none;
-            padding: 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            margin-top: 10px;
-        }
-
-        form button[type="submit"]:hover {
-            background-color: #45a049;
-        }
-
-        .toggle {
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .toggle a {
-            color: #4CAF50;
-            text-decoration: none;
-        }
-
-        .toggle a:hover {
-            text-decoration: underline;
-        }
-    </style>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
-    <div class="container">
-        <h2>Sign Up</h2>
-        <form method="POST" action="{% url 'signup' %}">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit">Sign Up</button>
-        </form>
-        <div class="toggle">
-            <p>Already have an account? <a href="{% url 'login' %}">Login here</a></p>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <div class="nav-logo">
+                <a href="{% url 'index' %}"><i data-lucide="shopping-cart"></i></a>
+                <span>CheqMate</span>
+            </div>
+            <div class="nav-links">
+                <a href="{% url 'login' %}" class="nav-link">
+                    <i data-lucide="user"></i>
+                    <span>Login</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <i data-lucide="user-plus" class="auth-icon"></i>
+                <h1>Create account</h1>
+                <p>Join us and start shopping smarter</p>
+            </div>
+
+            <form class="auth-form" method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    {% render_field form.username required=True %}
+                </div>
+                <div class="form-group">
+                    <label for="name">First name</label>
+                    {% render_field form.first_name required=True %}
+                </div>
+
+                <div class="form-group">
+                    <label for="name">Last name</label>
+                    {% render_field form.last_name required=True %}
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email address</label>
+                    {% render_field form.email required=True %}
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    {% render_field form.password1 required=True %}
+                </div>
+
+                <div class="form-group">
+                    <label for="confirm-password">Confirm password</label>
+                    {% render_field form.password2 required=True %}
+                </div>
+
+                <button type="submit" class="auth-button">Create account</button>
+            </form>
+
+            <p class="auth-footer">
+                Already have an account? 
+                <a href="{% url 'login' %}">Sign in</a>
+            </p>
         </div>
     </div>
+
+    <script>
+        lucide.createIcons();
+    </script>
 </body>
 </html>
