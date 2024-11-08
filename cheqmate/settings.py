@@ -25,7 +25,10 @@ SECRET_KEY = "django-insecure-g93*liqj2)9c2sc7i1rvtrf_*tqp273^zih%+gmb6y$5q+3%@1
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "cheqmate.app",
+    "localhost",
+]
 
 
 # Application definition
