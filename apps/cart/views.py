@@ -1,6 +1,5 @@
 from django.shortcuts import render
-import qrcode
-import io
+from django.conf import settings
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -8,6 +7,11 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404
 from .models import Cart
 from django.contrib.auth.models import User
+from django.utils.crypto import get_random_string
+from .utils import update_cart_sync_status
+import qrcode
+import os
+import io
 
 # Create your views here.
 
@@ -18,9 +22,20 @@ def dashboard_view(request):
 class StartShoppingView(APIView):
     def post(self, request):
         user = request.user
-        cart = Cart.objects.create(customer=user)
 
-        # Generate QR code
+        cart = Cart.objects.filter(customer=user, checked_out=False).first()
+
+        if not cart:
+            cart = Cart.objects.create(customer=user)
+        else:
+            cart.items.all().delete()
+        
+        
+        # Generate a unique filename for the QR code image
+        qr_code_filename = f"qr_code_{get_random_string(6)}.png"
+        qr_code_path = os.path.join(settings.MEDIA_ROOT, 'qrcodes', qr_code_filename)
+        
+        # Generate QR code with cart's qr_code
         qr = qrcode.QRCode(
             version=1,
             error_correction=qrcode.constants.ERROR_CORRECT_L,
@@ -32,15 +47,18 @@ class StartShoppingView(APIView):
 
         # Create an image from the QR code
         img = qr.make_image(fill_color="black", back_color="white")
-        
-        # Save image to a BytesIO object
-        buffer = io.BytesIO()
-        img.save(buffer, format="PNG")
-        buffer.seek(0)
 
-        # Return the image as an HTTP response
-        return HttpResponse(buffer, content_type="image/png")
+        # Save image to the filesystem
+        os.makedirs(os.path.dirname(qr_code_path), exist_ok=True)  # Ensure the directory exists
+        img.save(qr_code_path)
 
+        # Return the URL to the generated QR code image
+        qr_code_url = f"{settings.MEDIA_URL}qrcodes/{qr_code_filename}"
+
+        return JsonResponse({
+            'qrCodeURL': qr_code_url,  # Return the URL of the saved QR code
+            'qrCode': cart.qr_code     # Return the cart's QR code (if needed for the WebSocket)
+        })
 
 # api endponit the cart sends a post request to when the user wants to sync a cart to a user
 class SyncCartView(APIView):
@@ -52,6 +70,10 @@ class SyncCartView(APIView):
             cart = Cart.objects.get(qr_code=qr_code)
             cart.is_synced = True
             cart.save()
+
+            # Trigger the WebSocket update to notify the client
+            update_cart_sync_status(qr_code, cart.is_synced)
+
             return JsonResponse({
                 "success": True,
                 "message": "Cart synced with user", 
@@ -85,7 +107,7 @@ class SyncCartStatusView(APIView):
 # view cart page
 def cart_view(request, qr_code):
     # Get the cart for the logged-in user where checkout is not yet completed
-    cart = get_object_or_404(Cart, qr_code="CART103390", checked_out=False)
+    cart = get_object_or_404(Cart, qr_code=qr_code, checked_out=False)
 
     # Get all items in the user's cart
     items = cart.items.all()

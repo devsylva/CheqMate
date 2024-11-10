@@ -1,83 +1,90 @@
-{% load static %}
+{% load static %} 
 {% load widget_tweaks %}
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sign Up - CheqMate</title>
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}" />
     <script src="https://unpkg.com/lucide@latest"></script>
-</head>
-<body>
+  </head>
+  <body>
     <!-- Navigation -->
     <nav class="navbar">
-        <div class="container nav-container">
-            <div class="nav-logo">
-                <a href="{% url 'index' %}"><i data-lucide="shopping-cart"></i></a>
-                <span>CheqMate</span>
-            </div>
-            <div class="nav-links">
-                <a href="{% url 'login' %}" class="nav-link">
-                    <i data-lucide="user"></i>
-                    <span>Login</span>
-                </a>
-            </div>
+      <div class="container nav-container">
+        <div class="nav-logo">
+          <a href="{% url 'index' %}"><i data-lucide="shopping-cart"></i></a>
+          <span>CheqMate</span>
         </div>
+        <div class="nav-links">
+          <a href="{% url 'login' %}" class="nav-link">
+            <i data-lucide="user"></i>
+            <span>Login</span>
+          </a>
+        </div>
+      </div>
     </nav>
 
     <div class="auth-container">
-        <div class="auth-card">
-            <div class="auth-header">
-                <i data-lucide="user-plus" class="auth-icon"></i>
-                <h1>Create account</h1>
-                <p>Join us and start shopping smarter</p>
-            </div>
-
-            <form class="auth-form" method="POST">
-                {% csrf_token %}
-                <div class="form-group">
-                    <label for="username">Username</label>
-                    {% render_field form.username required=True %}
-                </div>
-                <div class="form-group">
-                    <label for="name">First name</label>
-                    {% render_field form.first_name required=True %}
-                </div>
-
-                <div class="form-group">
-                    <label for="name">Last name</label>
-                    {% render_field form.last_name required=True %}
-                </div>
-
-                <div class="form-group">
-                    <label for="email">Email address</label>
-                    {% render_field form.email required=True %}
-                </div>
-
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    {% render_field form.password1 required=True %}
-                </div>
-
-                <div class="form-group">
-                    <label for="confirm-password">Confirm password</label>
-                    {% render_field form.password2 required=True %}
-                </div>
-
-                <button type="submit" class="auth-button">Create account</button>
-            </form>
-
-            <p class="auth-footer">
-                Already have an account? 
-                <a href="{% url 'login' %}">Sign in</a>
-            </p>
+      <div class="auth-card">
+        <div class="auth-header">
+          <i data-lucide="user-plus" class="auth-icon"></i>
+          <h1>Create account</h1>
+          <p>Join us and start shopping smarter</p>
         </div>
+
+        <form class="auth-form" method="POST">
+          {% csrf_token %}
+          <div class="form-group">
+            {% if messages %}
+          <div class="messages">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+          </div>
+          {% endif %}
+            <label for="username">Username</label>
+            {% render_field form.username required=True %}
+          </div>
+          <div class="form-group">
+            <label for="name">First name</label>
+            {% render_field form.first_name required=True %}
+          </div>
+
+          <div class="form-group">
+            <label for="name">Last name</label>
+            {% render_field form.last_name required=True %}
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email address</label>
+            {% render_field form.email required=True %}
+          </div>
+
+          <div class="form-group">
+            <label for="password">Password</label>
+            {% render_field form.password1 required=True %}
+          </div>
+
+          <div class="form-group">
+            <label for="confirm-password">Confirm password</label>
+            {% render_field form.password2 required=True %}
+          </div>
+
+          <button type="submit" class="auth-button">Create account</button>
+        </form>
+
+        <p class="auth-footer">
+          Already have an account?
+          <a href="{% url 'login' %}">Sign in</a>
+        </p>
+      </div>
     </div>
 
     <script>
-        lucide.createIcons();
+      lucide.createIcons();
     </script>
-</body>
+  </body>
 </html>

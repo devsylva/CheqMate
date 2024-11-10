@@ -10,6 +10,7 @@ from django.utils.encoding import force_bytes, force_str
 from django.template.loader import render_to_string
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib import messages
+from django.contrib.messages import get_messages
 from django.contrib.auth.models import User
 from .models import CustomerProfile
 
@@ -40,10 +41,13 @@ def signup_view(request):
             })
             user.email_user(subject, message)
             messages.success(request, 'Please confirm your email address to complete the registration.')
-            return redirect('login')
+            return redirect('email_verification')
+        else:
+            messages.error(request, form.errors)
+            return redirect('signup')
     else:
         form = UserRegistrationForm()
-        print(form.fields)
+
     return render(request, 'account/signup.html', {'form': form})
 
 
@@ -58,9 +62,13 @@ def activate_view(request, uidb64, token):
         user.is_active = True
         user.save()
         messages.success(request, 'Your account has been activated successfully!')
-        return redirect('login')
+        storage = get_messages(request)
+        list(storage)
+        return redirect('email_verification_success')
     else:
         messages.warning(request, 'Activation link is invalid!')
+        storage = get_messages(request)
+        list(storage)
         return redirect('signup')
 
 
@@ -77,6 +85,8 @@ def login_view(request):
             if user is not None:
                 login(request, user)
                 messages.info(request, f"You are now logged in as {username}.")
+                storage = get_messages(request)
+                list(storage)
                 return redirect('dashboard')  # Replace 'home' with your homepage view name 
             else:
                 messages.error(request, "Invalid username or password.")
@@ -89,7 +99,6 @@ def login_view(request):
 @login_required(login_url='login')
 def logout_view(request):
     logout(request)
-    messages.info(request, "You have successfully logged out.")
     return redirect('index')  
 
 
@@ -110,3 +119,10 @@ def edit_profile(request):
     else:
         form = CustomerProfileForm(instance=profile)
     return render(request, 'account/edit_profile.html', {'form': form})
+
+
+def email_verification_view(request):
+    return render(request, 'account/email_verification.html')
+
+def email_verification_success_view(request):
+    return render(request, 'account/email_verification_successful.html')

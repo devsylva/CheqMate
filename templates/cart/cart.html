@@ -19,10 +19,10 @@
             </div>
             <div class="nav-links">
                 <a href="{% url 'dashboard' %}" class="nav-link">Dashboard</a>
-                <button onclick="handleLogout()" class="nav-link">
+                <a href="{% url 'logout' %}" class="nav-link">
                     <i data-lucide="log-out"></i>
                     <span>Logout</span>
-                </button>
+                </a>
             </div>
         </div>
     </nav>
