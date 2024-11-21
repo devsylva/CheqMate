@@ -46,4 +46,5 @@ txaio==23.1.1
 typing_extensions==4.12.2
 tzdata==2024.1
 urllib3==2.2.3
+usb_barcode_scanner_julz==0.2
 zope.interface==7.1.1
