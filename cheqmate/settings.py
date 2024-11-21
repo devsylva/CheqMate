@@ -13,6 +13,15 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 from pathlib import Path
 from django.contrib.messages import constants as messages
 import os 
+import environ
+
+# Initialize environment variables
+env = environ.Env(
+    DEBUG=(bool, False)  # Set default values and casting
+)
+
+# Reading the .env file
+environ.Env.read_env()
 
 
 
@@ -27,7 +36,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-g93*liqj2)9c2sc7i1rvtrf_*tqp273^zih%+gmb6y$5q+3%@1"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env('DEBUG')
 
 ALLOWED_HOSTS = [
     "cheqmate.app",
@@ -201,6 +210,12 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 APPEND_SLASH = True
+
+
+FLUTTERWAVE_PUBLIC_KEY=env("FLUTTERWAVE_PUBLIC_KEY")
+FLUTTERWAVE_SECRET_KEY=env("FLUTTERWAVE_SECRET_KEY")
+FLUTTERWAVE_ENCRYPTION_KEY=env("FLUTTERWAVE_ENCRYPTION_KEY")
+FLUTTERWAVE_WEBHOOK_HASH=env("FLUTTERWAVE_WEBHOOK_HASH")
 
 # in production
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

@@ -11,9 +11,11 @@ from django.template.loader import render_to_string
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib import messages
 from django.contrib.messages import get_messages
-from django.contrib.auth.models import User
 from .models import CustomerProfile
+from django.conf import settings
 
+
+User = settings.AUTH_USER_MODEL
 
 # Create your views here.
 def index_view(request):

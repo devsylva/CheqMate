@@ -1,67 +1,106 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cart - CheqMate</title>
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-    <link rel="stylesheet" href="{% static 'css/cart.css' %}">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Your Cart - CheqMate</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/cart.css' %}" />
     <script src="https://unpkg.com/lucide@latest"></script>
-</head>
-<body>
+    <script src="https://checkout.flutterwave.com/v3.js"></script>
+  </head>
+  <body>
     <!-- Navigation -->
     <nav class="navbar">
-        <div class="container nav-container">
-            <div class="nav-logo">
-                <i data-lucide="shopping-cart"></i>
-                <span>CheqMate</span>
-            </div>
-            <div class="nav-links">
-                <a href="{% url 'dashboard' %}" class="nav-link">Dashboard</a>
-                <a href="{% url 'logout' %}" class="nav-link">
-                    <i data-lucide="log-out"></i>
-                    <span>Logout</span>
-                </a>
-            </div>
+      <div class="container nav-container">
+        <div class="nav-logo">
+          <i data-lucide="shopping-cart"></i>
+          <span>CheqMate</span>
         </div>
+        <div class="nav-links">
+          <a href="{% url 'dashboard' %}" class="nav-link">Dashboard</a>
+          <a href="{% url 'logout' %}" class="nav-link">
+            <i data-lucide="log-out"></i>
+            <span>Logout</span>
+          </a>
+        </div>
+      </div>
     </nav>
 
+    <!-- Cart Section -->
     <div class="container cart-container">
-        <div class="cart-header">
-            <i data-lucide="shopping-bag"></i>
-            <h1>Your Cart</h1>
+      <div class="cart-header">
+        <i data-lucide="shopping-bag"></i>
+        <h1>Your Cart</h1>
+      </div>
+
+      <div class="cart-content">
+        <!-- Cart Items -->
+        <div class="cart-items" id="cartItems">
+          {% if items %} {% for item in items %}
+          <div class="cart-item">
+            <!-- <span>{{ item.image.url }}</span> -->
+            <span>{{ item.product.name }}</span>
+            <span>#{{ item.price }}</span>
+            <button onclick="removeFromCart('{{ cart.id }}', '{{ item.product.id }}')">
+              Remove
+            </button>
+          </div>
+          {% endfor %} {% else %}
+          <p>Your cart is empty.</p>
+          {% endif %}
         </div>
 
-        <div class="cart-content">
-            <div class="cart-items" id="cartItems">
-                <!-- Cart items will be dynamically inserted here -->
-            </div>
-
-            <div class="cart-summary">
-                <h2>Order Summary</h2>
-                <div class="summary-row">
-                    <span>Subtotal</span>
-                    <span id="subtotal">$0.00</span>
-                </div>
-                <div class="summary-row">
-                    <span>Tax (10%)</span>
-                    <span id="tax">$0.00</span>
-                </div>
-                <div class="summary-row total">
-                    <span>Total</span>
-                    <span id="total">$0.00</span>
-                </div>
-                <button class="checkout-button" onclick="handleCheckout()">
-                    Proceed to Checkout
-                </button>
-            </div>
+        <!-- Order Summary -->
+        <div class="cart-summary">
+          <h2>Order Summary</h2>
+          <div class="summary-row">
+            <span>Subtotal</span>
+            <span>${{ subtotal }}</span>
+          </div>
+          <div class="summary-row">
+            <span>Tax (10%)</span>
+            <span>${{ tax }}</span>
+          </div>
+          <div class="summary-row total">
+            <span>Total</span>
+            <span>${{ total_price }}</span>
+          </div>
+          <button class="checkout-button" onclick="makePayment()">
+            Proceed to Checkout
+          </button>
         </div>
+      </div>
     </div>
 
     <script src="{% static 'js/cart.js' %}"></script>
     <script>
-        lucide.createIcons();
+      lucide.createIcons();
+      function makePayment() {
+        FlutterwaveCheckout({
+          public_key: "{{futterwave_public_key}}",
+          tx_ref: "{{cart.qr_code}}",
+          amount: {{total_price}},
+          currency: "NGN",
+          payment_options: "card, mobilemoneyghana, ussd",
+          redirect_url:
+            "http://localhost:8000/payment/success?reference={{cart.qr_code}}",
+          meta: {
+            consumer_id: {{request.user.id}},
+            consumer_mac: "{{request.user}}",
+          },
+          customer: {
+            email: "{{request.user.email}}",
+            
+          },
+          customizations: {
+            title: "Cheqmate",
+            description: "Payment for an awesome Product(s)",
+            logo: "https://static.vecteezy.com/system/resources/previews/024/044/738/non_2x/shopping-cart-logo-design-cart-icon-ecommerce-logo-vector.jpg",
+          },
+        });
+      }
     </script>
-</body>
+  </body>
 </html>

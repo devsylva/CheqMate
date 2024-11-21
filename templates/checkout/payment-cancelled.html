@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment Cancelled</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f8ff;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      text-align: center;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      max-width: 400px;
+      width: 90%;
+    }
+
+    .icon {
+      background-color: #ff4d4d;
+      color: white;
+      width: 80px;
+      height: 80px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 50%;
+      font-size: 40px;
+      margin: 0 auto 20px auto;
+    }
+
+    h1 {
+      color: #ff4d4d;
+      margin: 20px 0 10px;
+    }
+
+    p {
+      color: #555;
+      font-size: 1rem;
+      margin: 10px 0 20px;
+    }
+
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="icon">✘</div>
+    <h1>Payment Cancelled</h1>
+    <p>Your payment was not completed. Please try again or contact support if you need assistance.</p>
+    <button onclick="tryAgain()">Try Again</button>
+  </div>
+
+  <script>
+    function tryAgain() {
+      window.location.href = "/";
+    }
+  </script>
+</body>
+</html>

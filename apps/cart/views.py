@@ -1,23 +1,26 @@
 from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404
-from .models import Cart
+from .models import Cart, Product, CartItem
 from django.contrib.auth.models import User
 from django.utils.crypto import get_random_string
 from .utils import update_cart_sync_status
+from decimal import Decimal
 import qrcode
 import os
 import io
 
 # Create your views here.
 
-
+@login_required(login_url='login')
 def dashboard_view(request):
     return render(request, 'dashboard.html')
+
 
 class StartShoppingView(APIView):
     def post(self, request):
@@ -111,15 +114,27 @@ def cart_view(request, qr_code):
 
     # Get all items in the user's cart
     items = cart.items.all()
-    print(items)
+    for i in items:
+        print(i.price)
 
     # Update the total price of the cart
     cart.update_total_price()
 
+
+    # Calculate tax as a Decimal
+    tax = cart.total_price * Decimal('0.1')
+    total_price = cart.total_price + tax
+
+
     return render(request, 'cart/cart.html', {
         'cart': cart,
         'items': items,
-        'total_price': cart.total_price
+        'tax': tax,
+        'sub_total': cart.total_price,
+        'total_price': cart.total_price + tax,
+        'futterwave_public_key': settings.FLUTTERWAVE_PUBLIC_KEY,
+        'futterwave_encryption_key': settings.FLUTTERWAVE_ENCRYPTION_KEY,
+        'futterwave_secret_key': settings.FLUTTERWAVE_SECRET_KEY,
     })
 
 
@@ -127,8 +142,8 @@ class AddToCartView(APIView):
     def post(self, request):
         cart_id = request.data.get('cart_id')
         product_id = request.data.get('product_id')
-        product = get_object_or_404(Product, id=product_id)
-        cart = get_object_or_404(Cart, id=cart_id)
+        product = get_object_or_404(Product, barcode=product_id)
+        cart = get_object_or_404(Cart, qr_code=cart_id)
 
         cart_item = CartItem.objects.create(cart=cart, product=product, price=product.price)
         cart.update_total_price()
